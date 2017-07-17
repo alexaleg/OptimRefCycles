@@ -23,7 +23,7 @@ function [x, y, VF, T, Zl, Zv, sl, sv, beta, h] = flashCal(z, P, x0, y0, VF0, T,
 % Output:
 %   The output is the final iteration value for the same variables.
 global flash
-flash = flash+1;
+flash = flash+1
 NC=5; % Number of components
 
 

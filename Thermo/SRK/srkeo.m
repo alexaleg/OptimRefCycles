@@ -84,13 +84,10 @@ secDerZ = polyval(secDerPol, Z); % Second derivative of the polynomial
 
 
 %% Density (more precisely: molar volume)
-% TODO: Vectorize calculation for correction
 Vt = Z * R * T / P;
 if secDerZ < 0 % Correct liquid SRK-volume using Peneleoux correction
-     c=0;
-     for i=1:NC
-       c=c+x(i) * (0.40768 * (0.29441 - ZRA(i)) * (R * Tc(i)) / (Pc(i))) ;
-     end
+   fact = (0.40768 .* (0.29441 - ZRA) .* (R .* Tc) ./ (Pc));
+   c = fact*x;
    V = ((Z * R * T / P)- c);
 else  % vapor
    V = Z * R * T / P;
@@ -99,18 +96,17 @@ end
 %% Fugacity coefficient
 % Correction added Nov. 2013:
 corrphi = (x'.*Ap.^0.5)*(1-kinteraction);
-% factor1 =((corrphi.*2.*Ap.^0.5./A)-Bp./B)
-% factor2 = A/B*log((Z+B)/Z)
-% Z-B
-% term1 = (Z-1).*Bp/B-log(Z-B)
-% exponent = (term1-factor2.*factor1)
-% exp(exponent)
 phi=exp((Z-1).*Bp/B-log(Z-B)...
      -A/B*log((Z+B)/Z).*((corrphi.*2.*Ap.^0.5./A)-Bp./B)); %Eq 21 Soave,1972
-% phi=real(phi);
+
 %% Enthalpy Molar
 % Calculations from Reid RC, Prausnitz JM, Poling BE. The properties of gases \& liquids (5th edition). New York: McGraw-Hill, Inc., 2001.
-% TODO: Vectorize calculation for dadt
+% Vectorized calculation for dadt: commented due to instabilities
+% fac = m.*(Tc./Pc).^0.5;
+% dq = fac'*(Ap.^0.5) + (Ap.^0.5)'*fac;
+% dadT = x'*dq*x;
+% dadT = -R^2/2*(T^0.5/P^0.5)*sqrt(abs(0.42747))*dadT;
+
 dadT=0;
 corrb = (R*T/P);
 corra = ((R*T)^2/P);
@@ -120,6 +116,7 @@ for i = 1:NC
         dadT = dadT -R / 2 * sqrt(abs(0.42747 / T)) * x(i) * x(j) * (m(j) * sqrt(abs(Ap(i)*(Tc(j)/P*(T^2)/(Pc(j))*(R^2)))) + m(i) * sqrt(abs(Ap(j) * (Tc(i)/P*(T^2)/(Pc(i))*(R^2))))) ;
     end
 end
+
 
 % Excess enthalpy using SRK
 Hsrk = - ((A *corra - T*dadT) / (B * corrb )) * log(Vt / (Vt + B * corrb)) + R * T * (1-Z);

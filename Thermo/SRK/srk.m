@@ -59,10 +59,7 @@ Ab = (Ap' * Ap).^0.5;
 A = x'*(Ab.*(1-kinteraction))*x;
 B = Bp*x;
 
-%% TODO
-% Find a way to calculate compressibility and its derivatives to feed it
-% to the outer optimization.
-% Solve cubic equation to find compressibility Z = P*V/(R*T)
+%% Compressibility
 Zall=roots([1 -1 A-B-B^2 -A*B]);  %Eq 4 Soave,1972
 
 % Use real roots only
@@ -75,13 +72,10 @@ else   write('error in specifying phase')
 end
 
 %% Density (more precisely: molar volume)
-% TODO: Vectorize calculation for correction
 Vt = Z * R * T / P;
 if phase==liquid % Correct liquid SRK-volume using Peneleoux correction
-     c=0;
-     for i=1:NC
-       c=c+x(i) * (0.40768 * (0.29441 - ZRA(i)) * (R * Tc(i)) / (Pc(i))) ;
-     end
+   fact = (0.40768 .* (0.29441 - ZRA) .* (R .* Tc) ./ (Pc));
+   c = fact*x;
    V = ((Z * R * T / P)- c);
 else  % vapor
    V = Z * R * T / P;
@@ -95,16 +89,15 @@ phi=exp((Z-1).*Bp/B-log(Z-B)...
 
 %% Enthalpy Molar
 % Calculations from Reid RC, Prausnitz JM, Poling BE. The properties of gases \& liquids (5th edition). New York: McGraw-Hill, Inc., 2001.
-% TODO: Vectorize calculation for dadt
+
 dadT=0;
 corrb = (R*T/P);
 corra = ((R*T)^2/P);
 
-for i = 1:NC
-    for j = 1:NC
-        dadT = dadT -R / 2 * sqrt(abs(0.42747 / T)) * x(i) * x(j) * (m(j) * sqrt(abs(Ap(i)*(Tc(j)/P*(T^2)/(Pc(j))*(R^2)))) + m(i) * sqrt(abs(Ap(j) * (Tc(i)/P*(T^2)/(Pc(i))*(R^2))))) ;
-    end
-end
+fac = m.*(Tc./Pc).^0.5;
+dq = fac'*(Ap.^0.5) + (Ap.^0.5)'*fac;
+dadT = x'*dq*x;
+dadT = -R^2/2*(T^0.5/P^0.5)*sqrt(abs(0.42747))*dadT;
 
 % Excess enthalpy using SRK
 Hsrk = - ((A *corra - T*dadT) / (B * corrb )) * log(Vt / (Vt + B * corrb)) + R * T * (1-Z);
