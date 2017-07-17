@@ -1,25 +1,12 @@
-%% Main Modular Model code
+%% Main Model code
 % This code includes a steady state simulation of the whole mini LNG plant.
-% Flash calculations:
-% The information for the flash calculations can be found in the files in the
-% folder ./Thermo/Flash
-% It is important to know that the initialization for the calculations for the
-% streams in this modular run is done in two ways:
-%   1. A priori information about the stream: for some streams their phase and
-%   temperature or pressure are already known or can be estimated. If necessary
-%   further calculations for compressibility can be made to get a more rigorous
-%   estimate. An example of this kind of initialization is stream 17.
-%   2. Using previous streams: once a flash has been done for a stream at
-%   different conditions, all their parameters are known (Zl,Zv, sl, sv, and
-%   beta). These results can be used for a stream that shares most of
-%   parameters. An example is stream 3 (initialized from stream 1)
-% Despite the robustness of the flash calculations, the problems still require
-% a good initial point. Sometimes, some a mix of the previously described methods
-% is used, i.e. stream 2 or stream 15.
 
 clear all
 clc
 % TODO
+% Include general comments about how it was initialized
+% Clean and organize this code.
+% Remove old comments
 % Set up results for plantwide optimization
 
 global flash
@@ -264,7 +251,7 @@ vf(13) = 0.5;
 
 %% QBOG
 Tin_bog = -32 + 273.15; % Inlet BOG temperature [K]
-m_bog = 610; % Gas mass flow [Kg/h] (Neskaa, 2010)
+m_bog=610; % Gas mass flow [Kg/h] (Neskaa, 2010)
 [ QHA_07, n_bog] = BOGC( Tin_bog, m_bog );
 
 %% HA-07 Simplified
@@ -348,7 +335,9 @@ Cross(4) =  -T(12) + T(8);
 Cross(5) = - T(14) + TBOGin;
 Cross(6) = - T(11) + TBOGout;
 
-%% Simulation structure
+%% Output information
+% Result = struct('z',[],'x',[],'y',[],'P',[],'T',[],'VF',[],'h',[],'n',[]);
+
 Result.x=x;
 Result.y=y;
 Result.VF=vf;
@@ -362,7 +351,6 @@ Result.Zv = Zv;
 Result.sl = sl;
 Result.sv = sv;
 Result.beta = beta;
-
-%% Save information to file
-filename='Modres.mat';
-save(filename, 'Result')
+% % % Save information to file
+% filename='SSresults.mat';
+% save(filename)
