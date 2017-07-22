@@ -373,4 +373,4 @@ Result.beta = beta;
 
 %% Save information to file
 filename='Modres.mat';
-% save(filename, 'Result')
+save(filename, 'Result')

@@ -1,4 +1,4 @@
-function [J]=f(VF, sl, sv, rho)
+function [J]=f(w, rho)
 %% Objective function for flash calculations
 % Assures complementarity of slack phases
 %   J = rho*(VF*sv+(1-VF)*sl)
@@ -14,6 +14,11 @@ function [J]=f(VF, sl, sv, rho)
 
 NC = 5;
 
+% Extract states:
+sl = w(2*NC+2);                   % liquid slack
+sv = w(2*NC+3);                   % vapor slack
+VF = w(2*NC-1);
+
 % Penalty function
-J = rho*(VF*sv+(1-VF)*sl);
+J = penalty(VF, sl, sv, rho);
 end

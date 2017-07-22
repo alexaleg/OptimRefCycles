@@ -26,7 +26,7 @@ This problem is very stiff and the objective function is not convex. The followi
 The results from the optimization are then split into sections depending on the active constraints obtained for each point.
 
 #### Ideas for analysis
-* One challenge in the areas of active constraints is to define with pression when the boundary lies. For this reason, a clustering algorithm could be implemented to predict the region in which a new point will be.
+* One challenge in the areas of active constraints is to define with pression when the boundary lies. For this reason, a classification algorithm could be implemented to predict the region in which a new point will be.
 * Due to the size and stiffness of the optimization problem, global convergence for each point is not guaranteed. An SVR machine could be set up to approximate the optimum for new points.
 
 ## References

@@ -3,7 +3,7 @@ function [x, y, VF, T, Zl, Zv, sl, sv, beta, h] = flashCal(z, P, x0, y0, VF0, T,
 % Information on the constraints can be found in:
 % PTCal.m for PT flash
 % PHCal.m for PH flash
-% penalty.m for penalty objective function
+% objective.m for objective function
 
 % Input:
 %   - z:  molar feed composition (NC)
@@ -17,7 +17,7 @@ function [x, y, VF, T, Zl, Zv, sl, sv, beta, h] = flashCal(z, P, x0, y0, VF0, T,
 %   - sl: liquid phase slack estimate
 %   - sv: vapor phase slack estimate
 %   - beta: relaxation parameter for VLE
-%   - rho: penalty coefficient
+%   - rho: objective coefficient
 %   - kind: calculation type 'PT' or 'PH'
 %   - varargin: variable input. Not existent for PT. h[kj/kmol] for PH.
 % Output:
@@ -38,7 +38,7 @@ if kind == 'PT' % PT flash calculations
   lb = zeros(size(w0));
   ub = ones(size(w0));
   ub(2*NC+2:end)=inf;
-  [w,fval,exitflag,output]=fmincon(@(w)penalty(w,rho),w0,[],[],[],[],lb,ub,@(w)PTCal(w, z, P, T),options);
+  [w,fval,exitflag,output]=fmincon(@(w)objective(w,rho),w0,[],[],[],[],lb,ub,@(w)PTCal(w, z, P, T),options);
 
 elseif kind == 'PH' % PT flash calculations
   h = varargin{1}; % Extract h
@@ -49,7 +49,7 @@ elseif kind == 'PH' % PT flash calculations
   lb = zeros(size(w0));
   ub = ones(size(w0));
   ub(2*NC+2:end)=inf;
-  [w,fval,exitflag,output]=fmincon(@(w)penalty(w,rho),w0,[],[],[],[],lb,ub,@(w)PHCal(w, z, P, h),options);
+  [w,fval,exitflag,output]=fmincon(@(w)objective(w,rho),w0,[],[],[],[],lb,ub,@(w)PHCal(w, z, P, h),options);
   T = w(end);
 else
   disp('Poorly specified flash')

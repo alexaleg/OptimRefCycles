@@ -19,13 +19,13 @@ rel = Pout/Pin; % Values from 2 to 10
 eta = polyval(p,rel);
 
 %% Ideal gas stimation of output temperature
-c=cpav(Tin,x); % Calculates the average Cp [Kj/K] for a given mixture at a especified temperature.
+c = cpav(Tin,x); % Calculates the average Cp [Kj/K] for a given mixture at a especified temperature.
 R = 8.314; % Universal gas constant [Kj/KmolK]
 %eta_0=0.74; % Compressor adiabatic efficiency
 k = c/(c-R);
 p = (k-1)/k;
 %Tout=Tin*(1+((Pout/Pin)^(p)-1)/eta); % Output temperature isoentropic
-T0=Tin*((Pout/Pin)^(p/eta)); % Output temperature polytropic
+T0 = Tin*((Pout/Pin)^(p/eta)); % Output temperature polytropic
 
 %% Isoentropic calculation
 
