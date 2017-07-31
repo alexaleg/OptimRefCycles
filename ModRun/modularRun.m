@@ -188,12 +188,12 @@ n(8)   = n(6);
 
 % Liquid initialization
 [Zl(8),~, ~,~] = srk(z(8,:),T(8),P(8),1);
-vf(8)  = 0.5;
+vf(8)  = 0;
 x(8,:) = z(6,:);
 
 [x(8,:), y(8,:), vf(8), T(8), Zl(8), Zv(8), sl(8), sv(8), beta(8), h(8)] =...
 flashCalEO(z(8,:), P(8), z(8,1:4), z(6,1:4), vf(8), T(8), Zl(8), Zv(6),...
-           sl(6), sv(6), beta(6) , rho, 'PT');
+           sl(6), sv(6), beta(6) , rho, 'PV',vf(8));
 
 H(8) = h(8)*n(8);
 QHA_04 = H(6)-H(8);
@@ -342,7 +342,7 @@ beta(17) = beta(18);
 
 %% Temperature Crosses
 Cross=[];
-%BOG Temperatures from BOG.m
+% BOG Temperatures
 TBOGin = -32 + 273.15; %Inlet temperature [K]
 TBOGout = -154 +273.15; %Outlet temperature [K]
 % % HA - 02
@@ -355,6 +355,12 @@ Cross(4) =  -T(12) + T(8);
 % % HA - 07
 Cross(5) = - T(14) + TBOGin;
 Cross(6) = - T(11) + TBOGout;
+
+%% UA calculations
+% HA-02
+UA02 = calUA(QHA_02,T(15), T(16), T(5), T(6));
+UA04 = calUA(QHA_04,T(12), T(13), T(6), T(8));
+UA07 = calUA(QHA_07,T(11), T(14), TBOGin, TBOGout);
 
 %% Simulation structure
 Result.x    = x;
@@ -370,7 +376,9 @@ Result.Zv   = Zv;
 Result.sl   = sl;
 Result.sv   = sv;
 Result.beta = beta;
-
+Result.QHA_04 = QHA_04;
+Result.QHA_02 = QHA_02;
+Result.QHA_07 = QHA_07;
 %% Save information to file
 filename='Modres.mat';
 save(filename, 'Result')

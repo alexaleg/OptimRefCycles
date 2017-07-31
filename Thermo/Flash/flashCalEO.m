@@ -51,6 +51,16 @@ elseif kind == 'PH' % PT flash calculations
   ub(2*NC+2:end)=inf;
   [w,fval,exitflag,output]=fmincon(@(w)objective(w,rho),w0,[],[],[],[],lb,ub,@(w)PHCal(w, z, P, h),options);
   T = w(end);
+elseif kind == 'PV'
+  VF = varargin{1}; % Extract VF
+  w0 = [x0, y0, VF0, Zl, Zv, sl, sv, beta, T];
+  lb = zeros(size(w0));
+  ub = ones(size(w0));
+  lb = zeros(size(w0));
+  ub = ones(size(w0));
+  ub(2*NC+2:end)=inf;
+  [w,fval,exitflag,output]=fmincon(@(w)objective(w,rho),w0,[],[],[],[],lb,ub,@(w)PVCal(w, z, P, VF),options);
+  T = w(end);
 else
   disp('Poorly specified flash')
 end
